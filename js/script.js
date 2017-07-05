@@ -1,67 +1,91 @@
+/**
+ *  RAP NAME GENERATOR
+ *  The user will insert their first name and on click receive one of several
+ *  possible outputs (i.e. Jill).
+ *
+ *       "Inspectah Jill"
+ *       "J.I.L.L. the Genius"
+ *       "Chief Jill the Disciple"
+ *       "Jill the Disciple"
+ *       "Inspectah J"
+ **/
+
 function Generator() {
-  this.last_names = ['the Chef', 'Digital', 'Wise', 'Knight', 'Wrecka', 'the Genius', 'the Zoo Keeper', 'the Monk', 'the Scientist', 'the Disciple', 'the Darkman', 'Pellegrino', 'the Ill Figure', 'Rocks The World', 'the Baptist'];
-  this.first_names = ['Inspectah', 'Masta', 'Poppa', 'Five Foot', 'Ghostface', 'Old Dirty'];
+    /* Name Arrays: Customize names to change possible output */
+    this.last_names = ['the Chef', 'Digital', 'Wise', 'Knight', 'Wrecka', 'the Genius', 'the Zoo Keeper', 'the Monk', 'the Scientist', 'the Disciple', 'the Darkman', 'Pellegrino', 'the Ill Figure', 'Rocks The World', 'the Baptist'];
+    this.first_names = ['Inspectah', 'Masta', 'Poppa', 'Five Foot', 'Ghostface', 'Old Dirty'];
+}
 
-  var last_names = this.last_names;
-  var first_names = this.first_names;
+/* need something for initials like A.B. */
+Generator.prototype.toInitial = function(name) {
+  return name.split('').join('.').toUpperCase()+'.';
+};
 
-  this.generate = function(name) {
-    rap_name = []
-    rap_name.push(first_name(), middle_name(name), last_name());
-    shuffled = shuffle(rap_name).join(' ');
-    return shuffled
-  }
+/* need something for capital name */
+Generator.prototype.toCapital = function(name) {
+  return name.toUpperCase();
+};
 
-  function last_name() {
-    var index = getRandomIndex(last_names);
-    return last_names[index];
-  }
+/* need something for lower name */
+Generator.prototype.toLower = function(name) {
+  return name.toLowerCase();
+};
 
-  function first_name() {
-    var index = getRandomIndex(first_names);
-    return first_names[index];
-  }
+/* need something for end of name */
+Generator.prototype.toEnd = function(name) {
+  var last_name = this.last_names[Math.floor(Math.random() * this.last_names.length)];
+  return name + ' ' + last_name;
+};
 
-  function middle_name(name) {
-    var options = [];
-    this.original_name = String(name);
-    options.push(this.original_name);
-    options.push(this.original_name.charAt(0).toUpperCase());
-    options.push(this.original_name.toUpperCase().split('').join('.')+'.');
-    var index = getRandomIndex(options);
-    return options[index]
-  }
+/* need something for beginning of name */
+Generator.prototype.toBeginning = function(name) {
+  var first_name = this.first_names[Math.floor(Math.random() * this.first_names.length)];
+  return first_name + ' ' + name;
+};
 
-  function shuffle(array) {
-    var currentIndex = array.length, tempVal, randomIndex;
-    while (0 !== currentIndex) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      tempVal = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = tempVal;
-    }
-
-    return array;
-  }
-
-  function getRandomIndex(array) {
-    return Math.floor(Math.random() * array.length);
+/* need something for creating the rap name */
+Generator.prototype.createName = function(name) {
+  var randomSelection = Math.floor(Math.random() * 7);
+  switch (randomSelection) {
+    case 0:
+    return this.toEnd(name);
+    break;
+    case 1:
+    return this.toBeginning(name);
+    break;
+    case 2:
+    return this.toEnd(this.toInitial(name));
+    break;
+    case 3:
+    return this.toBeginning(this.toInitial(name));
+    break;
+    case 4:
+    return this.toEnd(this.toCapital(name));
+    break;
+    case 5:
+    return this.toBeginning(this.toCapital(name));
+    break;
+    case 6:
+    return this.toEnd(this.toLower(name));
+    break;
+    case 7:
+    return this.toBeginning(this.toLower(name));
+    break;
   }
 }
 
 $(document).ready(function() {
   var engine = new Generator;
-  $("#enter").click(function() {
-    if ($("#user-input").val() !== "") {
-      $(".error").hide();
-      var original_name = $("#user-input").val();
-      var rap_name = engine.generate(original_name)
-      $(".response").text(rap_name).show();
+  $('#enter').click(function() {
+    if ($('#user-input').val() != undefined) {
+      $('.error').hide();
+      var origin = $('#user-input').val();
+      var rapName = engine.createName(origin);
+      $('.response').text(rapName).show();
     }
     else {
-      $(".error").show();
-      $(".response").hide();
+      $('.error').show();
+      $('.response').hide();
     }
-  });
+  })
 });
